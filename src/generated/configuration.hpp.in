@@ -1,0 +1,13 @@
+// clang-format off
+#pragma once
+
+#include <cstdint>
+#include <string_view>
+
+/** Monitor Build Version */
+inline constexpr std::string_view VERSION = "@BUILD_VERSION@";
+
+/** GPIO Pin for the System LED */
+inline constexpr uint8_t SYSTEM_LED_PIN = @SYSTEM_LED_PIN@;
+
+// clang-format on
