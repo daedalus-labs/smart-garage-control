@@ -1,4 +1,4 @@
 [submodule "pico-mqtt"]
 	path = pico-mqtt
 	url = git@github.com:daedalus-labs/pico-mqtt.git
-	branch = v0.9.0
+	tag = v0.9.0
