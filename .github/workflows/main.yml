@@ -16,16 +16,26 @@ jobs:
         run: echo "build_version=0.0.0-${{  github.run_number }}" >> $GITHUB_ENV
         if: ${{ github.ref_type == 'branch' }}
 
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Clean workspace
+        run: |
+          ls -la ./
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+          ls -la ./
+
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Synchronize submodules
         run:  |
+          git submodule sync
           git submodule init
           git submodule update
 
       - name: Build Smart Garage Control
-        run: bash build.bash --build -DBUILD_VERSION=${{ env.build_version }}
+        run: |
+          bash build.bash --clean
+          bash build.bash --build -DBUILD_VERSION=${{ env.build_version }}
 
       - name: Upload Smart Garage Control
         uses: actions/upload-artifact@v3
