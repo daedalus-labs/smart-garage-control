@@ -7,7 +7,13 @@
 /** Monitor Build Version */
 inline constexpr std::string_view VERSION = "@BUILD_VERSION@";
 
+/** Port of the device receiving the data (Pico W) */
+inline constexpr uint16_t CONFIGURED_MQTT_PORT = @MQTT_PORT@;
+
 /** GPIO Pin for the System LED */
 inline constexpr uint8_t SYSTEM_LED_PIN = @SYSTEM_LED_PIN@;
+
+/** GPIO Pin for the Feedback LED used by the DHT Sensor */
+inline constexpr uint8_t MQTT_FEEDBACK_PIN = @MQTT_FEEDBACK_PIN@;
 
 // clang-format on
