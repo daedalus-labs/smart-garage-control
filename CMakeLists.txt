@@ -29,11 +29,25 @@ if(NOT DEFINED SYSTEM_LED_PIN)
     set(SYSTEM_LED_PIN 13)
 endif()
 
+if(NOT DEFINED MQTT_PORT)
+    set(MQTT_PORT 1883)
+endif()
+
+if(NOT DEFINED MQTT_FEEDBACK_PIN)
+    set(MQTT_FEEDBACK_PIN 14)
+endif()
+
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/configuration.hpp.in
     ${CMAKE_BINARY_DIR}/generated/configuration.hpp
     @ONLY
 )
+
+############
+##  MQTT  ##
+############
+
+add_subdirectory(pico-mqtt)
 
 #############
 ##  BUILD  ##
@@ -51,8 +65,9 @@ target_include_directories(
     ${PROJECT_NAME}
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/connectivity/detail
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/detail
         ${CMAKE_CURRENT_SOURCE_DIR}/build
+        ${CMAKE_CURRENT_SOURCE_DIR}/pico-mqtt/include
 )
 
 target_sources(
@@ -63,7 +78,12 @@ target_sources(
 
 target_link_libraries(
     ${PROJECT_NAME}
+    pico_cyw43_arch_lwip_threadsafe_background
+    pico_lwip_mqtt
+    pico_multicore
+    pico_mqtt
     pico_stdlib
+    pico_unique_id
     hardware_adc
 )
 
