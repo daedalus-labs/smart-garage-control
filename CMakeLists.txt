@@ -73,6 +73,7 @@ target_include_directories(
 target_sources(
     ${PROJECT_NAME}
     PRIVATE
+        src/utilities.cpp
         src/main.cpp
 )
 
