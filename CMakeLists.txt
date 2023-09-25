@@ -73,6 +73,9 @@ target_include_directories(
 target_sources(
     ${PROJECT_NAME}
     PRIVATE
+        src/controllers/door-status.cpp
+        src/controllers/door.cpp
+
         src/utilities.cpp
         src/main.cpp
 )
