@@ -8,6 +8,9 @@ SPDX-License-Identifier: BSD-3-Clause
 #include <string_view>
 
 
+namespace controllers {
+inline constexpr size_t DOOR_STATUS_STRING_LENGTH = 15;
+
 /** Enumeration of the possible status values of a Wireless Connection */
 enum class DoorStatus : uint8_t
 {
@@ -33,3 +36,13 @@ bool isTransient(DoorStatus status);
  * @return A human readable name for @a status.
  */
 std::string_view toString(DoorStatus status);
+
+/**
+ * Converts @a status to a DoorStatus value.
+ *
+ * @param[in] string_in The human readable string.
+ * @param[out] status_out @a string_in as a DoorStatus value.
+ * @return True if the parse was successful, false otherwise.
+ */
+bool parse(std::string string_in, DoorStatus& status_out);
+} // namespace controllers
