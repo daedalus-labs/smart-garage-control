@@ -11,7 +11,7 @@ VL53L4CX::VL53L4CX()
 
 VL53L4CX::~VL53L4CX() = default;
 
-int32_t VL53L4CX::distance()
+int32_t VL53L4CX::distance() const
 {
     return 0;
 }

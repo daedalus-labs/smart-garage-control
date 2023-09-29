@@ -20,6 +20,6 @@ public:
     /**
      * @return The current range read by the sensor in millimeters.
      */
-    virtual int32_t distance() = 0;
+    virtual int32_t distance() const = 0;
 };
 } // namespace controllers

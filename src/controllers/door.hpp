@@ -28,6 +28,11 @@ public:
     Door(uint8_t door_number, uint8_t control_pin);
 
     /**
+     * @return The current door closure distance in millimeters.
+     */
+    int32_t closeDistance() const;
+
+    /**
      * @return The number identifying the door.
      */
     uint8_t number() const;

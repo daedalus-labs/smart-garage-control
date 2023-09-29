@@ -33,6 +33,11 @@ Door::Door(uint8_t door_number, uint8_t control_pin)
     _update();
 }
 
+int32_t Door::closeDistance() const
+{
+    return _range_sensor->distance();
+}
+
 uint8_t Door::number() const
 {
     return _door_number;

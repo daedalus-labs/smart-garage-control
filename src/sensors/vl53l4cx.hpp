@@ -16,6 +16,6 @@ class VL53L4CX final : public Range
 public:
     VL53L4CX();
     ~VL53L4CX();
-    int32_t distance() override;
+    int32_t distance() const override;
 };
 } // namespace sensors
