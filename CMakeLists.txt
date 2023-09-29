@@ -76,6 +76,8 @@ target_sources(
         src/controllers/door-status.cpp
         src/controllers/door.cpp
 
+        src/sensors/vl53l4cx.cpp
+
         src/utilities.cpp
         src/main.cpp
 )

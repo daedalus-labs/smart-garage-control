@@ -5,8 +5,10 @@ SPDX-License-Identifier: BSD-3-Clause
 #pragma once
 
 #include "door-status.hpp"
+#include "sensors/range.hpp"
 
 #include <cstdint>
+#include <memory>
 #include <string_view>
 
 
@@ -22,9 +24,13 @@ public:
      *
      * @param[in] door_number The door number.
      * @param[in] control_pin The pin assigned to the Door Relay.
-     * @param[in] sensor_pin The pin assigned to the Door Feedback sensor.
      */
-    Door(uint8_t door_number, uint8_t control_pin, uint8_t sensor_pin);
+    Door(uint8_t door_number, uint8_t control_pin);
+
+    /**
+     * @return The number identifying the door.
+     */
+    uint8_t number() const;
 
     /**
      * Sets the target temperature for the Door.
@@ -49,10 +55,10 @@ private:
      */
     void _update();
 
-    const uint8_t _sensor_pin;
     const uint8_t _control_pin;
     const uint8_t _door_number;
     DoorStatus _current_status;
     DoorStatus _desired_status;
+    std::unique_ptr<sensors::Range> _range_sensor;
 };
 } // namespace controllers

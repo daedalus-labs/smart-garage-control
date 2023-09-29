@@ -7,6 +7,7 @@ SPDX-License-Identifier: BSD-3-Clause
 
 #include "door-status.hpp"
 #include "gpio.hpp"
+#include "sensors/vl53l4cx.hpp"
 
 #include <hardware/gpio.h>
 #include <pico/stdio.h>
@@ -20,16 +21,21 @@ SPDX-License-Identifier: BSD-3-Clause
 inline constexpr uint32_t TOGGLE_BOUNCE_MS = 150;
 
 namespace controllers {
-Door::Door(uint8_t door_number, uint8_t control_pin, uint8_t sensor_pin)
-    : _sensor_pin(sensor_pin),
-      _control_pin(control_pin),
+Door::Door(uint8_t door_number, uint8_t control_pin)
+    : _control_pin(control_pin),
       _door_number(door_number),
       _current_status(DoorStatus::OPEN),
-      _desired_status(DoorStatus::OPEN)
+      _desired_status(DoorStatus::OPEN),
+      _range_sensor(std::make_unique<sensors::VL53L4CX>())
 {
     gpio_init(_control_pin);
     gpio_set_dir(_control_pin, GPIO_OUT);
     _update();
+}
+
+uint8_t Door::number() const
+{
+    return _door_number;
 }
 
 void Door::set(DoorStatus desired_status)
@@ -63,7 +69,9 @@ void Door::set(DoorStatus desired_status)
 }
 
 DoorStatus Door::status()
-{}
+{
+    return _current_status;
+}
 
 void Door::_toggle()
 {
