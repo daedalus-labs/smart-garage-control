@@ -20,4 +20,8 @@ inline constexpr size_t TOPIC_BUFFER_SIZE = UINT8_MAX;
 inline constexpr std::string_view PROGRAM_TOPIC_FORMAT = "%s";
 inline constexpr std::string_view VERSION_TOPIC_FORMAT = "%s/version";
 inline constexpr std::string_view UID_TOPIC_FORMAT = "%s/uid";
+inline constexpr std::string_view BOARD_TEMPERATURE_TOPIC_FORMAT = "%s/board/temperature";
+inline constexpr std::string_view DOOR_STATE_TOPIC_FORMAT = "%s/door/%u/state";
+inline constexpr std::string_view DOOR_CLOSE_DISTANCE_TOPIC_FORMAT = "%s/door/%u/distance";
+inline constexpr std::string_view SET_DOOR_STATE_TOPIC_FORMAT = "%s/door/%u/state/set";
 // clang-format on
