@@ -14,7 +14,17 @@ This code uses reference code copyright 2022 by STMicroelectronics
 
 #include <cstdint>
 
-inline constexpr uint8_t T_BOOT_MS = 3;
+/**
+ * Boot time in the datasheet is defined as 1.2, using 2 here to avoid attempting communication before boot has finished.
+ * @see docs/Datasheet-VL53L4CX
+ */
+inline constexpr uint32_t T_BOOT_MS = 3;
+
+/** The Model ID and Module Type registers are used to validate communication. */
+inline constexpr uint16_t MODEL_ID_INDEX = 0x010F;
+inline constexpr uint16_t MODULE_TYPE_INDEX = 0x0110;
+inline constexpr uint8_t MODEL_ID_EXPECTED_VALUE = 0xEB;
+inline constexpr uint8_t MODULE_TYPE_EXPECTED_VALUE = 0xAA;
 
 
 namespace sensors {

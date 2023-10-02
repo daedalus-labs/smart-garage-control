@@ -66,6 +66,7 @@
     },
     "cSpell.words": [
         "ALTCP",
+        "datasheet",
         "gpio",
         "GPIOS",
         "INPROGRESS",
@@ -85,6 +86,7 @@
         "SSID",
         "strerr",
         "timepoint",
-        "VREF"
+        "VREF",
+        "XSHUT"
     ]
 }
