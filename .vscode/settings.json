@@ -64,7 +64,8 @@
         "numbers": "cpp",
         "sstream": "cpp",
         "cfenv": "cpp",
-        "vl53lx_ll_def.h": "c"
+        "vl53lx_ll_def.h": "c",
+        "timer.h": "c"
     },
     "cSpell.words": [
         "ALTCP",
