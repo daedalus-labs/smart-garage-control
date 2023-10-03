@@ -13,12 +13,14 @@ This code uses reference code copyright 2022 by STMicroelectronics
 #include <hardware/i2c.h>
 
 #include <cstdint>
+#include <cstdio>
 
 /**
  * Boot time in the datasheet is defined as 1.2, using 2 here to avoid attempting communication before boot has finished.
  * @see docs/Datasheet-VL53L4CX
  */
 inline constexpr uint32_t T_BOOT_MS = 3;
+inline constexpr uint8_t DEFAULT_VL53L4CX_ADDRESS = 0x54;
 
 /** The Model ID and Module Type registers are used to validate communication. */
 inline constexpr uint16_t MODEL_ID_INDEX = 0x010F;
@@ -50,16 +52,26 @@ int32_t VL53L4CX::distance() const
 }
 
 bool VL53L4CX::start()
-{}
+{
+    return _setDeviceAddress() && _waitForDeviceBooted() && _initializeDevice();
+}
 
-bool VL53L4CX::_checkDeviceInitialized()
-{}
-
-bool VL53L4CX::_initializeData()
-{}
+bool VL53L4CX::_initializeDevice()
+{
+    // data_init
+    return true;
+}
 
 bool VL53L4CX::_setDeviceAddress()
-{}
+{
+    return true;
+}
+
+bool VL53L4CX::_waitForDeviceBooted()
+{
+    // poll_for_boot_completion
+    return true;
+}
 
 void VL53L4CX::_off()
 {

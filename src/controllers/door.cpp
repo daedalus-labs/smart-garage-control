@@ -26,7 +26,7 @@ Door::Door(uint8_t door_number, uint8_t control_pin)
       _door_number(door_number),
       _current_status(DoorStatus::OPEN),
       _desired_status(DoorStatus::OPEN),
-      _range_sensor(std::make_unique<sensors::VL53L4CX>())
+      _range_sensor(std::make_unique<sensors::VL53L4CX>(1, 2))
 {
     gpio_init(_control_pin);
     gpio_set_dir(_control_pin, GPIO_OUT);

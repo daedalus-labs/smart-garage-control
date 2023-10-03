@@ -20,9 +20,9 @@ public:
     bool start();
 
 private:
-    bool _checkDeviceInitialized();
-    bool _initializeData();
+    bool _initializeDevice();
     bool _setDeviceAddress();
+    bool _waitForDeviceBooted();
 
     void _off();
     void _on();
