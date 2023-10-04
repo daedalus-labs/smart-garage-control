@@ -14,6 +14,7 @@
 
 #include "utilities.hpp"
 
+#include <hardware/i2c.h>
 #include <hardware/timer.h>
 #include <pico/time.h>
 #include <vl53lx_platform_log.h>
@@ -24,18 +25,47 @@
 #define trace_i2c(...) _LOG_TRACE_PRINT(VL53LX_TRACE_MODULE_NONE, VL53LX_TRACE_LEVEL_NONE, VL53LX_TRACE_FUNCTION_I2C, ##__VA_ARGS__)
 
 
-VL53LX_Error VL53LX_WriteMulti(VL53LX_Dev_t* pdev, uint16_t index, uint8_t* pdata, uint32_t count)
-{}
+VL53LX_Error VL53LX_WriteMulti(VL53LX_Dev_t* pdev, uint16_t register_address, uint8_t* pdata, uint32_t count)
+{
+    uint8_t buffer_size = 3 * count;
+    uint8_t buffer[buffer_size];
+    size_t index = 0, offset = 0;
 
+    for (index = 0, offset = 0; index < buffer_size, offset < count; index += 3, offset++) {
+        buffer[index] = static_cast<uint8_t>((register_address + index) >> 8);
+        buffer[index + 1] = static_cast<uint8_t>((register_address + index) & 0xFF);
+        buffer[index + 2] = *(pdata + offset);
+    }
 
-VL53LX_Error VL53LX_ReadMulti(VL53LX_Dev_t* pdev, uint16_t index, uint8_t* pdata, uint32_t count)
-{}
+    int32_t write_count = i2c_write_blocking(i2c_default, pdev->i2c_slave_address, buffer, buffer_size, false);
 
+    if (write_count != buffer_size) {
+        fprintf(stderr, "Failed to write to [%u, %u]: %d", pdev->i2c_slave_address, register_address, write_count);
+        return VL53LX_ERROR_CONTROL_INTERFACE;
+    }
+    return VL53LX_ERROR_NONE;
+}
+
+VL53LX_Error VL53LX_ReadMulti(VL53LX_Dev_t* pdev, uint16_t register_address, uint8_t* pdata, uint32_t count)
+{
+    uint8_t buffer[2];
+    buffer[0] = static_cast<uint8_t>(register_address >> 8);
+    buffer[1] = static_cast<uint8_t>(register_address & 0xFF);
+    i2c_write_blocking(i2c_default, pdev->i2c_slave_address, buffer, sizeof(buffer), true);
+
+    int32_t read_count = i2c_read_blocking(i2c_default, pdev->i2c_slave_address, pdata, count, false);
+
+    if (read_count != count) {
+        fprintf(stderr, "Failed to read from [%u, %u]: %d", pdev->i2c_slave_address, register_address, read_count);
+        return VL53LX_ERROR_CONTROL_INTERFACE;
+    }
+    return VL53LX_ERROR_NONE;
+}
 
 VL53LX_Error VL53LX_WrByte(VL53LX_Dev_t* pdev, uint16_t index, uint8_t data)
 {
     uint8_t buffer[1];
-    buffer[0] = (uint8_t)(data);
+    buffer[0] = static_cast<uint8_t>(data);
 
     return VL53LX_WriteMulti(pdev, index, buffer, 1);
 }
@@ -43,8 +73,8 @@ VL53LX_Error VL53LX_WrByte(VL53LX_Dev_t* pdev, uint16_t index, uint8_t data)
 VL53LX_Error VL53LX_WrWord(VL53LX_Dev_t* pdev, uint16_t index, uint16_t data)
 {
     uint8_t buffer[2];
-    buffer[0] = (uint8_t)(data >> 8);
-    buffer[1] = (uint8_t)(data & 0x00FF);
+    buffer[0] = static_cast<uint8_t>(data >> 8);
+    buffer[1] = static_cast<uint8_t>(data & 0x00FF);
 
     return VL53LX_WriteMulti(pdev, index, buffer, VL53LX_BYTES_PER_WORD);
 }
@@ -52,10 +82,10 @@ VL53LX_Error VL53LX_WrWord(VL53LX_Dev_t* pdev, uint16_t index, uint16_t data)
 VL53LX_Error VL53LX_WrDWord(VL53LX_Dev_t* pdev, uint16_t index, uint32_t data)
 {
     uint8_t buffer[4];
-    buffer[0] = (uint8_t)(data >> 24);
-    buffer[1] = (uint8_t)((data & 0x00FF0000) >> 16);
-    buffer[2] = (uint8_t)((data & 0x0000FF00) >> 8);
-    buffer[3] = (uint8_t)(data & 0x000000FF);
+    buffer[0] = static_cast<uint8_t>(data >> 24);
+    buffer[1] = static_cast<uint8_t>((data & 0x00FF0000) >> 16);
+    buffer[2] = static_cast<uint8_t>((data & 0x0000FF00) >> 8);
+    buffer[3] = static_cast<uint8_t>(data & 0x000000FF);
 
     return VL53LX_WriteMulti(pdev, index, buffer, VL53LX_BYTES_PER_DWORD);
 }
@@ -140,7 +170,7 @@ VL53LX_Error
         }
     }
 
-    if(!found && status == VL53LX_ERROR_NONE) {
+    if (!found && status == VL53LX_ERROR_NONE) {
         return VL53LX_ERROR_TIME_OUT;
     }
 
