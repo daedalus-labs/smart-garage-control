@@ -27,15 +27,7 @@ extern "C" {
 typedef struct
 {
     VL53LX_DevData_t Data;
-
     uint8_t i2c_slave_address;
-
-    uint8_t comms_type;
-
-    uint16_t comms_speed_khz;
-
-    uint32_t new_data_ready_poll_duration_ms;
-
 } VL53LX_Dev_t;
 
 

@@ -76,6 +76,7 @@ target_sources(
     ${PROJECT_NAME}
     PRIVATE
         # STM VL53L4CX code
+        src/sensors/detail/core/src/vl53lx_api.c
         src/sensors/detail/core/src/vl53lx_api_calibration.c
         src/sensors/detail/core/src/vl53lx_api_core.c
         src/sensors/detail/core/src/vl53lx_api_debug.c
@@ -99,7 +100,7 @@ target_sources(
         # Pico Platform code for VL53l4CX
         src/sensors/detail/platform/src/vl53lx_platform_ipp.c
         src/sensors/detail/platform/src/vl53lx_platform_log.c
-        src/sensors/detail/platform/src/vl53lx_platform.c
+        src/sensors/detail/platform/src/vl53lx_platform.cpp
 
         src/controllers/door-status.cpp
         src/controllers/door.cpp

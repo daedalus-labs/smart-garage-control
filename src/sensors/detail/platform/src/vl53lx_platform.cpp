@@ -31,7 +31,7 @@ VL53LX_Error VL53LX_WriteMulti(VL53LX_Dev_t* pdev, uint16_t register_address, ui
     uint8_t buffer[buffer_size];
     size_t index = 0, offset = 0;
 
-    for (index = 0, offset = 0; index < buffer_size, offset < count; index += 3, offset++) {
+    for (index = 0, offset = 0; offset < count; index += 3, offset++) {
         buffer[index] = static_cast<uint8_t>((register_address + index) >> 8);
         buffer[index + 1] = static_cast<uint8_t>((register_address + index) & 0xFF);
         buffer[index + 2] = *(pdata + offset);
@@ -55,7 +55,7 @@ VL53LX_Error VL53LX_ReadMulti(VL53LX_Dev_t* pdev, uint16_t register_address, uin
 
     int32_t read_count = i2c_read_blocking(i2c_default, pdev->i2c_slave_address, pdata, count, false);
 
-    if (read_count != count) {
+    if (read_count < 0 || static_cast<uint32_t>(read_count) != count) {
         fprintf(stderr, "Failed to read from [%u, %u]: %d", pdev->i2c_slave_address, register_address, read_count);
         return VL53LX_ERROR_CONTROL_INTERFACE;
     }
