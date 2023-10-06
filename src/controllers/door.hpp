@@ -6,6 +6,7 @@ SPDX-License-Identifier: BSD-3-Clause
 
 #include "door-status.hpp"
 #include "sensors/range.hpp"
+#include "utilities.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -22,20 +23,14 @@ public:
     /**
      * Constructor.
      *
-     * @param[in] door_number The door number.
-     * @param[in] control_pin The pin assigned to the Door Relay.
+     * @param[in] cfg The System Configuration.
      */
-    Door(uint8_t door_number, uint8_t control_pin);
+    Door(const SystemConfiguration &cfg);
 
     /**
      * @return The current door closure distance in millimeters.
      */
     int32_t closeDistance() const;
-
-    /**
-     * @return The number identifying the door.
-     */
-    uint8_t number() const;
 
     /**
      * Sets the target temperature for the Door.
@@ -61,7 +56,6 @@ private:
     void _update();
 
     const uint8_t _control_pin;
-    const uint8_t _door_number;
     DoorStatus _current_status;
     DoorStatus _desired_status;
     std::unique_ptr<sensors::Range> _range_sensor;

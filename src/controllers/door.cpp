@@ -21,12 +21,11 @@ SPDX-License-Identifier: BSD-3-Clause
 inline constexpr uint32_t TOGGLE_BOUNCE_MS = 150;
 
 namespace controllers {
-Door::Door(uint8_t door_number, uint8_t control_pin)
-    : _control_pin(control_pin),
-      _door_number(door_number),
+Door::Door(const SystemConfiguration &cfg)
+    : _control_pin(cfg.doorRelayPin()),
       _current_status(DoorStatus::OPEN),
       _desired_status(DoorStatus::OPEN),
-      _range_sensor(std::make_unique<sensors::VL53L4CX>(1, 2, 3))
+      _range_sensor(std::make_unique<sensors::VL53L4CX>(cfg.rangeSensorI2CAddress(), cfg.xshutPin(), cfg.retryCount()))
 {
     gpio_init(_control_pin);
     gpio_set_dir(_control_pin, GPIO_OUT);
@@ -38,25 +37,20 @@ int32_t Door::closeDistance() const
     return _range_sensor->distance();
 }
 
-uint8_t Door::number() const
-{
-    return _door_number;
-}
-
 void Door::set(DoorStatus desired_status)
 {
     if (desired_status == _desired_status) {
-        printf("Cannot set door %u: Already %s\n", _door_number, toString(_desired_status));
+        printf("Cannot set door: Already %s\n", toString(_desired_status));
         return;
     }
 
     if (isTransient(_desired_status)) {
-        fprintf(stderr, "Cannot set door %u: Current state (%s) is transient", _door_number, toString(_desired_status));
+        fprintf(stderr, "Cannot set door: Current state (%s) is transient", toString(_desired_status));
         return;
     }
 
     if (isTransient(desired_status)) {
-        fprintf(stderr, "Cannot set door %u: Desired state (%s) is transient", _door_number, toString(_desired_status));
+        fprintf(stderr, "Cannot set door: Desired state (%s) is transient", toString(_desired_status));
         return;
     }
 
