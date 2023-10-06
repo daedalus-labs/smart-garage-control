@@ -38,9 +38,9 @@ public:
     const std::string& deviceName() const;
 
     /**
-     * @return The list of pins to control the Garage Doors.
+     * @return The pin to control the Garage Door.
      */
-    const std::vector<uint8_t>& doorPins() const;
+    uint8_t doorRelayPin() const;
 
     /**
      * @note The MQTT Broker can be an IPv4 address or a hostname. This should be passed through a DNS resolver.
@@ -54,9 +54,24 @@ public:
     const std::string& passphrase() const;
 
     /**
+     * @return The i2C address of the range sensor.
+     */
+    uint8_t rangeSensorI2CAddress() const;
+
+    /**
+     * @return The retry count to use when attempting to read distance from the range sensor.
+     */
+    uint8_t retryCount() const;
+
+    /**
      * @return The SSID of the configured wireless network.
      */
     const std::string& ssid() const;
+
+    /**
+     * @return The XSHUT pin used by the range sensor.
+     */
+    uint8_t xshutPin() const;
 
 private:
     /**
@@ -70,7 +85,10 @@ private:
     std::string _passphrase;
     std::string _mqtt_broker;
     std::string _device_name;
-    std::vector<uint8_t> _door_pins;
+    uint8_t _door_pin;
+    uint8_t _xshut_pin;
+    uint8_t _range_sensor_i2c_addr;
+    uint8_t _range_sensor_retry_count;
 };
 
 /**

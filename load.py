@@ -45,7 +45,7 @@ LOAD_OPTION : str = 'load'
 OFFSET_OPTION : str = '--offset'
 FORCE_OPTION : str = '-f'
 
-def writeConfigurationInteger(value : int, first_write : bool = False):
+def writeConfigurationByte(value : int, first_write : bool = False):
     option = 'ab'
     if first_write:
         option = 'wb'
@@ -81,18 +81,21 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--passphrase', default='', help='The passphrase of the specified Wireless SSID')
     parser.add_argument('-b', '--broker', default='', help='The MQTT Broker to connect to')
     parser.add_argument('-d', '--device', default='', help='The device name')
-    parser.add_argument('--doors', nargs="+", help='The pins to be used for each garage door')
+    parser.add_argument('-g','--door', type=int, help='The pin to be used to control the garage door')
+    parser.add_argument('-i','--i2c', type=int, help='The i2c address of the VL53L4CX')
+    parser.add_argument('-x','--xshut', type=int, help='The XSHUT pin of the VL53L4CX')
+    parser.add_argument('-r','--retry', type=int, help='The retry count for reading range data from the VL53L4CX')
     args = parser.parse_args()
     
     if not os.path.exists(CONFIGURATION_DIRECTORY):
         os.makedirs(CONFIGURATION_DIRECTORY)
-        
-    num_garages = min(len(args.doors), MAXIMUM_NUMBER_OF_GARAGE_DOORS)
 
     # Second step is to create the configuration file.
     # Configuration file will be defined as a binary encoded file with the following values written in order:
-    #   Number of Garages (Fixed 1-byte length)
-    #   Garage Pins (1-byte each)
+    #   Garage Relay Pin (Fixed 1-byte length)
+    #   VL53L4CX XSHUT Pin (Fixed 1-byte length)
+    #   VL53L4CX I2C Address (Fixed 1-byte length)
+    #   VL53L4CX Max Retry Count (Fixed 1-byte length)
     #   SSID Length (Fixed 4-byte length)
     #   SSID
     #   Passphrase Length (Fixed 4-byte length)
@@ -104,9 +107,10 @@ if __name__ == '__main__':
     #   Total Length (Fixed 4-byte length)
     #
     # This will allow the pico code to pull the configuration length from a fixed location (last 4 bytes in memory).
-    totalLength = writeConfigurationInteger(num_garages, True)
-    for index in range(num_garages):
-        totalLength += writeConfigurationInteger(int(args.doors[index]))
+    totalLength = writeConfigurationByte(int(args.door), True)
+    totalLength += writeConfigurationByte(int(args.xshut))
+    totalLength += writeConfigurationByte(int(args.i2c))
+    totalLength += writeConfigurationByte(int(args.retry))
     totalLength += writeConfigurationString(args.ssid)
     totalLength += writeConfigurationString(args.passphrase)
     totalLength += writeConfigurationString(args.broker)

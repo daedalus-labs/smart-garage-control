@@ -66,6 +66,8 @@ target_include_directories(
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}/src/detail
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/sensors/detail/core/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/sensors/detail/platform/include
         ${CMAKE_CURRENT_SOURCE_DIR}/build
         ${CMAKE_CURRENT_SOURCE_DIR}/pico-mqtt/include
 )
@@ -73,6 +75,33 @@ target_include_directories(
 target_sources(
     ${PROJECT_NAME}
     PRIVATE
+        # STM VL53L4CX code
+        src/sensors/detail/core/src/vl53lx_api.c
+        src/sensors/detail/core/src/vl53lx_api_calibration.c
+        src/sensors/detail/core/src/vl53lx_api_core.c
+        src/sensors/detail/core/src/vl53lx_api_debug.c
+        src/sensors/detail/core/src/vl53lx_api_preset_modes.c
+        src/sensors/detail/core/src/vl53lx_core_support.c
+        src/sensors/detail/core/src/vl53lx_core.c
+        src/sensors/detail/core/src/vl53lx_dmax.c
+        src/sensors/detail/core/src/vl53lx_hist_algos_gen3.c
+        src/sensors/detail/core/src/vl53lx_hist_algos_gen4.c
+        src/sensors/detail/core/src/vl53lx_hist_char.c
+        src/sensors/detail/core/src/vl53lx_hist_core.c
+        src/sensors/detail/core/src/vl53lx_hist_funcs.c
+        src/sensors/detail/core/src/vl53lx_nvm_debug.c
+        src/sensors/detail/core/src/vl53lx_nvm.c
+        src/sensors/detail/core/src/vl53lx_register_funcs.c
+        src/sensors/detail/core/src/vl53lx_sigma_estimate.c
+        src/sensors/detail/core/src/vl53lx_silicon_core.c
+        src/sensors/detail/core/src/vl53lx_wait.c
+        src/sensors/detail/core/src/vl53lx_xtalk.c
+
+        # Pico Platform code for VL53l4CX
+        src/sensors/detail/platform/src/vl53lx_platform_ipp.c
+        src/sensors/detail/platform/src/vl53lx_platform_log.c
+        src/sensors/detail/platform/src/vl53lx_platform.cpp
+
         src/controllers/door-status.cpp
         src/controllers/door.cpp
 
@@ -91,6 +120,7 @@ target_link_libraries(
     pico_stdlib
     pico_unique_id
     hardware_adc
+    hardware_i2c
 )
 
 pico_enable_stdio_usb(${PROJECT_NAME} 1)

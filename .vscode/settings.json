@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.impl": "cpp",
+        "*.py": "python",
         "string_view": "cpp",
         "array": "cpp",
         "chrono": "cpp",
@@ -62,10 +63,13 @@
         "iostream": "cpp",
         "numbers": "cpp",
         "sstream": "cpp",
-        "cfenv": "cpp"
+        "cfenv": "cpp",
+        "vl53lx_ll_def.h": "c",
+        "timer.h": "c"
     },
     "cSpell.words": [
         "ALTCP",
+        "datasheet",
         "gpio",
         "GPIOS",
         "INPROGRESS",
@@ -85,6 +89,7 @@
         "SSID",
         "strerr",
         "timepoint",
-        "VREF"
+        "VREF",
+        "XSHUT"
     ]
 }

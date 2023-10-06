@@ -44,10 +44,26 @@ static int32_t consumeString(const std::vector<uint8_t>& serialized_data, size_t
     return static_cast<int32_t>(string_size + sizeof(uint32_t));
 }
 
-SystemConfiguration::SystemConfiguration() : _ssid(), _passphrase(), _mqtt_broker(), _device_name()
+SystemConfiguration::SystemConfiguration()
+    : _ssid(),
+      _passphrase(),
+      _mqtt_broker(),
+      _device_name(),
+      _door_pin(),
+      _xshut_pin(),
+      _range_sensor_i2c_addr(),
+      _range_sensor_retry_count()
 {}
 
-SystemConfiguration::SystemConfiguration(const std::vector<uint8_t>& configuration) : _ssid(), _passphrase(), _mqtt_broker(), _device_name()
+SystemConfiguration::SystemConfiguration(const std::vector<uint8_t>& configuration)
+    : _ssid(),
+      _passphrase(),
+      _mqtt_broker(),
+      _device_name(),
+      _door_pin(),
+      _xshut_pin(),
+      _range_sensor_i2c_addr(),
+      _range_sensor_retry_count()
 {
     _parse(configuration);
 }
@@ -57,9 +73,9 @@ const std::string& SystemConfiguration::deviceName() const
     return _device_name;
 }
 
-const std::vector<uint8_t>& SystemConfiguration::doorPins() const
+uint8_t SystemConfiguration::doorRelayPin() const
 {
-    return _door_pins;
+    return _door_pin;
 }
 
 const std::string& SystemConfiguration::mqttBroker() const
@@ -72,17 +88,34 @@ const std::string& SystemConfiguration::passphrase() const
     return _passphrase;
 }
 
+uint8_t SystemConfiguration::rangeSensorI2CAddress() const
+{
+    return _range_sensor_i2c_addr;
+}
+
+uint8_t SystemConfiguration::retryCount() const
+{
+    return _range_sensor_retry_count;
+}
+
 const std::string& SystemConfiguration::ssid() const
 {
     return _ssid;
+}
+
+uint8_t SystemConfiguration::xshutPin() const
+{
+    return _xshut_pin;
 }
 
 void SystemConfiguration::_parse(const std::vector<uint8_t>& configuration)
 {
     // The order here is paramount.
     // The configuration file is (in forward order):
-    //   - Number of Garages (Fixed 1-byte length)
-    //   - Garage Pins (1-byte each)
+    //   - Garage Relay Pin (Fixed 1-byte length)
+    //   - VL53L4CX XSHUT Pin (Fixed 1-byte length)
+    //   - VL53L4CX I2C Address (Fixed 1-byte length)
+    //   - VL53L4CX Max Retry Count (Fixed 1-byte length)
     //   - SSID Length (Fixed 4-byte length)
     //   - SSID
     //   - Passphrase Length (Fixed 4-byte length)
@@ -93,13 +126,17 @@ void SystemConfiguration::_parse(const std::vector<uint8_t>& configuration)
     //   - Device Name
     size_t current_index = 0;
 
-    _door_pins.resize(configuration[current_index]);
+    _door_pin = configuration[current_index];
     current_index++;
 
-    for(size_t pin_index = 0; pin_index < _door_pins.size(); pin_index++) {
-        _door_pins[pin_index] = configuration[current_index];
-        current_index++;
-    }
+    _xshut_pin = configuration[current_index];
+    current_index++;
+    
+    _range_sensor_i2c_addr = configuration[current_index];
+    current_index++;
+    
+    _range_sensor_retry_count = configuration[current_index];
+    current_index++;
 
     int32_t consumed_bytes = consumeString(configuration, current_index, _ssid);
     current_index += consumed_bytes;
