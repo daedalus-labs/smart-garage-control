@@ -17,7 +17,7 @@ This code uses reference code copyright 2022 by STMicroelectronics
 #include <cstdio>
 
 /**
- * Boot time in the datasheet is defined as 1.2, using 2 here to avoid attempting communication before boot has finished.
+ * Boot time in the datasheet is defined as 1.2, using 3 here to be extra cautious.
  * @see docs/Datasheet-VL53L4CX
  */
 inline constexpr uint32_t T_BOOT_MS = 3;
