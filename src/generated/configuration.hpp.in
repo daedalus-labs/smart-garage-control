@@ -16,6 +16,12 @@ inline constexpr uint8_t SYSTEM_LED_PIN = @SYSTEM_LED_PIN@;
 /** GPIO Pin for the Feedback LED used by the DHT Sensor */
 inline constexpr uint8_t MQTT_FEEDBACK_PIN = @MQTT_FEEDBACK_PIN@;
 
+/** GPIO Pin for the i2c SDA line */
+inline constexpr uint8_t I2C_SDA_PIN = @I2C_SDA_PIN@;
+
+/** GPIO Pin for the i2c SCL line */
+inline constexpr uint8_t I2C_SCL_PIN = @I2C_SCL_PIN@;
+
 inline constexpr size_t TOPIC_BUFFER_SIZE = UINT8_MAX;
 inline constexpr std::string_view PROGRAM_TOPIC_FORMAT = "%s";
 inline constexpr std::string_view VERSION_TOPIC_FORMAT = "%s/version";
