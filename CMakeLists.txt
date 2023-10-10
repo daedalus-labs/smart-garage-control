@@ -29,6 +29,14 @@ if(NOT DEFINED SYSTEM_LED_PIN)
     set(SYSTEM_LED_PIN 13)
 endif()
 
+if(NOT DEFINED I2C_SCL_PIN)
+    set(I2C_SCL_PIN 5)
+endif()
+
+if(NOT DEFINED I2C_SDA_PIN)
+    set(I2C_SDA_PIN 4)
+endif()
+
 if(NOT DEFINED MQTT_PORT)
     set(MQTT_PORT 1883)
 endif()
