@@ -73,7 +73,7 @@ target_include_directories(
     ${PROJECT_NAME}
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/detail
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/connectivity/detail
         ${CMAKE_CURRENT_SOURCE_DIR}/src/sensors/detail/core/include
         ${CMAKE_CURRENT_SOURCE_DIR}/src/sensors/detail/platform/include
         ${CMAKE_CURRENT_SOURCE_DIR}/build
@@ -109,6 +109,9 @@ target_sources(
         src/sensors/detail/platform/src/vl53lx_platform_ipp.c
         src/sensors/detail/platform/src/vl53lx_platform_log.c
         src/sensors/detail/platform/src/vl53lx_platform.cpp
+
+        src/connectivity/wireless/connection-status.cpp
+        src/connectivity/wireless/wifi-connection.cpp
 
         src/controllers/door-status.cpp
         src/controllers/door.cpp

@@ -3,6 +3,7 @@ Copyright (c) 2023 Joe Porembski
 SPDX-License-Identifier: BSD-3-Clause
 ------------------------------------------------------------------------------*/
 #include "controllers/door.hpp"
+#include "connectivity/wireless.hpp"
 #include "generated/configuration.hpp"
 #include "gpio.hpp"
 #include "mqtt.hpp"
@@ -27,6 +28,7 @@ inline constexpr uint32_t INITIALIZATION_WAIT_MS = 5000;
 inline constexpr uint32_t DATA_PERIOD_MS = 5000;
 inline constexpr uint32_t I2C_BAUDRATE_HZ = 400000;
 inline constexpr uint8_t QUEUE_SIZE = 10;
+inline constexpr uint8_t WIFI_NOT_CONNECTED_THRESHOLD = 6;
 
 typedef struct
 {
@@ -73,6 +75,16 @@ void controlLoop()
         queue_add_blocking(&feedback_queue, &door_feedback);
         sleep_ms(DATA_PERIOD_MS);
     }
+}
+
+feedback_entry getMostRecentData()
+{
+    feedback_entry data;
+    queue_remove_blocking(&feedback_queue, &data);
+    while (!queue_is_empty(&feedback_queue)) {
+        queue_remove_blocking(&feedback_queue, &data);
+    }
+    return data;
 }
 
 void publish(mqtt::Client& client, const feedback_entry& data)
@@ -166,6 +178,7 @@ int main(int argc, char** argv)
     std::string board_id = systemIdentifier();
     bool mqtt_initialized = false;
     uint32_t count = 0;
+    uint32_t wifi_check_count = 0;
 
     sleep_ms(INITIALIZATION_WAIT_MS);
     if (!read(configuration)) {
@@ -173,12 +186,27 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
+    WifiConnection wifi(configuration.deviceName(), configuration.ssid(), configuration.passphrase());
     mqtt::Client client(configuration.mqttBroker(), CONFIGURED_MQTT_PORT, configuration.deviceName(), MQTT_FEEDBACK_PIN);
     sleep_ms(COMMUNICATION_PERIOD_MS);
 
     multicore_launch_core1(controlLoop);
 
     while (true) {
+        if (wifi.status() != ConnectionStatus::CONNECTED) {
+            printf("Wifi status: %s\n", toString(wifi.status()).data());
+            if (wifi_check_count > WIFI_NOT_CONNECTED_THRESHOLD) {
+                printf("Attempting reconnect of wifi...\n");
+                wifi.reset();
+                wifi_check_count = 0;
+            }
+            else {
+                wifi_check_count++;
+            }
+            sleep_ms(COMMUNICATION_PERIOD_MS);
+            continue;
+        }
+
         if (!client.connected()) {
             printf("Connecting MQTT...\n");
             mqtt_initialized = false;
@@ -194,7 +222,12 @@ int main(int argc, char** argv)
             continue;
         }
 
+        feedback_entry data = getMostRecentData();
+        publish(client, data);
+
         printf("\n----------------- [%u]\n", count);
+        printf("Wifi Connection Status: %s (%s)\n", toString(wifi.status()).data(), wifi.ipAddress().c_str());
+        printf("CPU Temperature: %.1fC\n", data.board_temperature);
         printf("MQTT Status: %s\n", client.connected() ? "true" : "false");
         printf("-----------------\n");
 
