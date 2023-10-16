@@ -5,6 +5,7 @@ SPDX-License-Identifier: BSD-3-Clause
 #include "controllers/door.hpp"
 #include "connectivity/wireless.hpp"
 #include "generated/configuration.hpp"
+#include "sensors/board.hpp"
 #include "gpio.hpp"
 #include "mqtt.hpp"
 #include "utilities.hpp"
@@ -60,6 +61,7 @@ void processRequest(const request_entry& request, controllers::Door& door)
 void controlLoop()
 {
     controllers::Door door(configuration);
+    sensors::Board board;
 
     while (true) {
         if (!queue_is_empty(&request_queue)) {
@@ -72,6 +74,7 @@ void controlLoop()
         std::memset(door_feedback.current_status, 0, sizeof(door_feedback.current_status));
         std::strcpy(door_feedback.current_status, controllers::toString(door.status()).data());
         door_feedback.current_close_distance = door.closeDistance();
+        door_feedback.board_temperature = board.temperature();
         queue_add_blocking(&feedback_queue, &door_feedback);
         sleep_ms(DATA_PERIOD_MS);
     }
@@ -109,9 +112,6 @@ static void onDoorSetState(const std::string& topic, const mqtt::Buffer& data)
     std::string value = mqtt::toString(data);
     std::memset(set_request.desired_status, 0, sizeof(set_request.desired_status));
     std::strcpy(set_request.desired_status, value.c_str());
-
-    /** @todo What is the best way to get door number? */
-
     printf("Received request to set door to %s\n", set_request.desired_status);
     queue_add_blocking(&request_queue, &set_request);
 }
@@ -183,6 +183,7 @@ int main(int argc, char** argv)
     sleep_ms(INITIALIZATION_WAIT_MS);
     if (!read(configuration)) {
         printf("Failed to read system configuration\n");
+        gpio_put(SYSTEM_LED_PIN, OFF);
         return EXIT_FAILURE;
     }
 
@@ -228,6 +229,7 @@ int main(int argc, char** argv)
         printf("\n----------------- [%u]\n", count);
         printf("Wifi Connection Status: %s (%s)\n", toString(wifi.status()).data(), wifi.ipAddress().c_str());
         printf("CPU Temperature: %.1fC\n", data.board_temperature);
+        printf("Door Status: %s (%d mm) \n", data.current_status, data.current_close_distance);
         printf("MQTT Status: %s\n", client.connected() ? "true" : "false");
         printf("-----------------\n");
 

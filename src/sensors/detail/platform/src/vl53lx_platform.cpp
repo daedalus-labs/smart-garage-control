@@ -56,7 +56,7 @@ VL53LX_Error VL53LX_ReadMulti(VL53LX_Dev_t* pdev, uint16_t register_address, uin
     int32_t read_count = i2c_read_blocking(i2c_default, pdev->i2c_slave_address, pdata, count, false);
 
     if (read_count < 0 || static_cast<uint32_t>(read_count) != count) {
-        fprintf(stderr, "Failed to read from [%u, %u]: %d", pdev->i2c_slave_address, register_address, read_count);
+        fprintf(stderr, "Failed to read from [%u, %u]: %d\n", pdev->i2c_slave_address, register_address, read_count);
         return VL53LX_ERROR_CONTROL_INTERFACE;
     }
     return VL53LX_ERROR_NONE;

@@ -26,7 +26,7 @@ if(NOT DEFINED BUILD_VERSION)
 endif()
 
 if(NOT DEFINED SYSTEM_LED_PIN)
-    set(SYSTEM_LED_PIN 13)
+    set(SYSTEM_LED_PIN 16)
 endif()
 
 if(NOT DEFINED I2C_SCL_PIN)
@@ -42,7 +42,7 @@ if(NOT DEFINED MQTT_PORT)
 endif()
 
 if(NOT DEFINED MQTT_FEEDBACK_PIN)
-    set(MQTT_FEEDBACK_PIN 14)
+    set(MQTT_FEEDBACK_PIN 17)
 endif()
 
 configure_file(
@@ -116,6 +116,7 @@ target_sources(
         src/controllers/door-status.cpp
         src/controllers/door.cpp
 
+        src/sensors/board.cpp
         src/sensors/vl53l4cx.cpp
 
         src/utilities.cpp
