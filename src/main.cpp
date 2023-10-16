@@ -124,6 +124,11 @@ static void initialize()
     queue_init(&feedback_queue, sizeof(feedback_entry), QUEUE_SIZE);
     queue_init(&request_queue, sizeof(request_entry), QUEUE_SIZE);
 
+
+/**
+ * Should this be moved to the `Board` class?
+ */
+
     gpio_init(SYSTEM_LED_PIN);
     gpio_set_dir(SYSTEM_LED_PIN, GPIO_OUT);
     gpio_put(SYSTEM_LED_PIN, ON);
@@ -131,6 +136,11 @@ static void initialize()
 
 static void initializeI2C()
 {
+
+/**
+ * Should this be moved to the `Board` class?
+ */
+
 #if !defined(i2c_default)
     #error Please provide an environment with a default i2c interface
 #else
