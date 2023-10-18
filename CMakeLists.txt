@@ -26,7 +26,7 @@ if(NOT DEFINED BUILD_VERSION)
 endif()
 
 if(NOT DEFINED SYSTEM_LED_PIN)
-    set(SYSTEM_LED_PIN 13)
+    set(SYSTEM_LED_PIN 16)
 endif()
 
 if(NOT DEFINED I2C_SCL_PIN)
@@ -42,7 +42,7 @@ if(NOT DEFINED MQTT_PORT)
 endif()
 
 if(NOT DEFINED MQTT_FEEDBACK_PIN)
-    set(MQTT_FEEDBACK_PIN 14)
+    set(MQTT_FEEDBACK_PIN 17)
 endif()
 
 configure_file(
@@ -73,7 +73,7 @@ target_include_directories(
     ${PROJECT_NAME}
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/detail
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/connectivity/detail
         ${CMAKE_CURRENT_SOURCE_DIR}/src/sensors/detail/core/include
         ${CMAKE_CURRENT_SOURCE_DIR}/src/sensors/detail/platform/include
         ${CMAKE_CURRENT_SOURCE_DIR}/build
@@ -110,9 +110,13 @@ target_sources(
         src/sensors/detail/platform/src/vl53lx_platform_log.c
         src/sensors/detail/platform/src/vl53lx_platform.cpp
 
+        src/connectivity/wireless/connection-status.cpp
+        src/connectivity/wireless/wifi-connection.cpp
+
         src/controllers/door-status.cpp
         src/controllers/door.cpp
 
+        src/sensors/board.cpp
         src/sensors/vl53l4cx.cpp
 
         src/utilities.cpp
