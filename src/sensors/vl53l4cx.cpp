@@ -8,10 +8,11 @@ This code uses reference code copyright 2022 by STMicroelectronics
 #include "vl53l4cx.hpp"
 
 #include "gpio.hpp"
-#include "vl53lx_api.h"
+#include "vl53l5cx_api.h"
 
 #include <hardware/gpio.h>
 #include <hardware/i2c.h>
+#include <pico/stdio.h>
 
 #include <cstdint>
 #include <cstdio>
@@ -37,7 +38,8 @@ namespace sensors {
 VL53L4CX::VL53L4CX(uint8_t address, uint8_t shutdown_pin, size_t retry_count)
     : _shutdown_pin(shutdown_pin), _max_retries(retry_count), _device()
 {
-    _device.i2c_slave_address = address;
+    _device.platform.address = address;
+    _device.platform.i2c = i2c_default;
     gpio_init(_shutdown_pin);
     gpio_set_dir(_shutdown_pin, GPIO_OUT);
 
@@ -45,11 +47,13 @@ VL53L4CX::VL53L4CX(uint8_t address, uint8_t shutdown_pin, size_t retry_count)
     // the floating GPIO.
     _off();
     _on();
+
+    printf("VL53L4CX initialized [i2c Address %u, XSHUT %u]\n", _device.platform.address, _shutdown_pin);
 }
 
 VL53L4CX::~VL53L4CX()
 {
-    VL53LX_StopMeasurement(&_device);
+    stop();
     sleep_ms(T_BOOT_MS);
     _off();
 }
@@ -99,24 +103,38 @@ bool VL53L4CX::start()
     return true;
 }
 
+bool VL53L4CX::stop()
+{
+    if(vl53l5cx_stop_ranging(&_device) == VL53L5CX_OK) {
+        return true;
+    }
+    return false;
+}
+
 void VL53L4CX::_off()
 {
-    gpio_put(_shutdown_pin, OFF);
+    gpio_put(_shutdown_pin, HIGH);
     sleep_ms(T_BOOT_MS);
 }
 
 void VL53L4CX::_on()
 {
-    gpio_put(_shutdown_pin, ON);
+    gpio_put(_shutdown_pin, LOW);
     sleep_ms(T_BOOT_MS);
+}
+
+bool VL53L4CX::_is_alive() const
+{
+    uint8_t is_alive;
+    return vl53l5cx_is_alive() == VL53L5CX_OK && is_alive == VL53L5CX_ALIVE;
 }
 
 bool VL53L4CX::_verify() const
 {
     uint8_t model_id, model_type;
 
-    VL53LX_RdByte(&_device, MODEL_ID_INDEX, &model_id);
-    VL53LX_RdByte(&_device, MODULE_TYPE_INDEX, &model_type);
+    RdByte(&_device, MODEL_ID_INDEX, &model_id);
+    RdByte(&_device, MODULE_TYPE_INDEX, &model_type);
     printf("VL53L4CX @ %u has Model ID 0x%02X and Model Type 0x%02X\n", _device.i2c_slave_address, model_id, model_type);
 
     return model_id == MODEL_ID_EXPECTED_VALUE && model_type == MODULE_TYPE_EXPECTED_VALUE;
