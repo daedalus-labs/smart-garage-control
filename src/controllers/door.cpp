@@ -29,6 +29,7 @@ Door::Door(const SystemConfiguration &cfg)
 {
     gpio_init(_control_pin);
     gpio_set_dir(_control_pin, GPIO_OUT);
+    _range_sensor->start();
     _update();
 }
 

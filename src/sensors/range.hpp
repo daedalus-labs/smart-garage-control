@@ -21,5 +21,14 @@ public:
      * @return The current range read by the sensor in millimeters.
      */
     virtual int32_t distance() const = 0;
+
+    /**
+     * Initializes the range sensor to start taking distance measurements.
+     * 
+     * @return True if the sensor started, false otherwise. 
+     */
+    virtual bool start() = 0;
+
+    virtual bool stop() = 0;
 };
 } // namespace controllers

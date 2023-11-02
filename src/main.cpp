@@ -27,7 +27,7 @@ inline constexpr uint32_t COMMUNICATION_PERIOD_MS = 10000;
 inline constexpr uint32_t MQTT_CONNECTION_WAIT_MS = 17500;
 inline constexpr uint32_t INITIALIZATION_WAIT_MS = 5000;
 inline constexpr uint32_t DATA_PERIOD_MS = 5000;
-inline constexpr uint32_t I2C_BAUDRATE_HZ = 400000;
+inline constexpr uint32_t I2C_BAUDRATE_HZ = 100 * 1000;
 inline constexpr uint8_t QUEUE_SIZE = 10;
 inline constexpr uint8_t WIFI_NOT_CONNECTED_THRESHOLD = 6;
 
@@ -124,22 +124,9 @@ static void initialize()
     queue_init(&feedback_queue, sizeof(feedback_entry), QUEUE_SIZE);
     queue_init(&request_queue, sizeof(request_entry), QUEUE_SIZE);
 
-
-/**
- * Should this be moved to the `Board` class?
- */
-
     gpio_init(SYSTEM_LED_PIN);
     gpio_set_dir(SYSTEM_LED_PIN, GPIO_OUT);
     gpio_put(SYSTEM_LED_PIN, ON);
-}
-
-static void initializeI2C()
-{
-
-/**
- * Should this be moved to the `Board` class?
- */
 
 #if !defined(i2c_default)
     #error Please provide an environment with a default i2c interface
@@ -153,6 +140,7 @@ static void initializeI2C()
 
     // Make the I2C pins available to picotool
     bi_decl(bi_2pins_with_func(I2C_SDA_PIN, I2C_SCL_PIN, GPIO_FUNC_I2C));
+    printf("i2c initialized (SCL: %u, SDA: %u)\n", I2C_SCL_PIN, I2C_SDA_PIN);
 #endif
 }
 
@@ -184,7 +172,6 @@ static bool initializeMQTT(mqtt::Client& client, const std::string& uid)
 int main(int argc, char** argv)
 {
     initialize();
-    initializeI2C();
     std::string board_id = systemIdentifier();
     bool mqtt_initialized = false;
     uint32_t count = 0;

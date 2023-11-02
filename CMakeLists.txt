@@ -30,11 +30,11 @@ if(NOT DEFINED SYSTEM_LED_PIN)
 endif()
 
 if(NOT DEFINED I2C_SCL_PIN)
-    set(I2C_SCL_PIN 5)
+    set(I2C_SCL_PIN PICO_DEFAULT_I2C_SCL_PIN)
 endif()
 
 if(NOT DEFINED I2C_SDA_PIN)
-    set(I2C_SDA_PIN 4)
+    set(I2C_SDA_PIN PICO_DEFAULT_I2C_SDA_PIN)
 endif()
 
 if(NOT DEFINED MQTT_PORT)
@@ -84,31 +84,13 @@ target_sources(
     ${PROJECT_NAME}
     PRIVATE
         # STM VL53L4CX code
-        src/sensors/detail/core/src/vl53lx_api.c
-        src/sensors/detail/core/src/vl53lx_api_calibration.c
-        src/sensors/detail/core/src/vl53lx_api_core.c
-        src/sensors/detail/core/src/vl53lx_api_debug.c
-        src/sensors/detail/core/src/vl53lx_api_preset_modes.c
-        src/sensors/detail/core/src/vl53lx_core_support.c
-        src/sensors/detail/core/src/vl53lx_core.c
-        src/sensors/detail/core/src/vl53lx_dmax.c
-        src/sensors/detail/core/src/vl53lx_hist_algos_gen3.c
-        src/sensors/detail/core/src/vl53lx_hist_algos_gen4.c
-        src/sensors/detail/core/src/vl53lx_hist_char.c
-        src/sensors/detail/core/src/vl53lx_hist_core.c
-        src/sensors/detail/core/src/vl53lx_hist_funcs.c
-        src/sensors/detail/core/src/vl53lx_nvm_debug.c
-        src/sensors/detail/core/src/vl53lx_nvm.c
-        src/sensors/detail/core/src/vl53lx_register_funcs.c
-        src/sensors/detail/core/src/vl53lx_sigma_estimate.c
-        src/sensors/detail/core/src/vl53lx_silicon_core.c
-        src/sensors/detail/core/src/vl53lx_wait.c
-        src/sensors/detail/core/src/vl53lx_xtalk.c
+        src/sensors/detail/core/src/vl53l5cx_api.c
+        src/sensors/detail/core/src/vl53l5cx_plugin_detection_thresholds.c
+        src/sensors/detail/core/src/vl53l5cx_plugin_motion_indicator.c
+        src/sensors/detail/core/src/vl53l5cx_plugin_xtalk.c
 
         # Pico Platform code for VL53l4CX
-        src/sensors/detail/platform/src/vl53lx_platform_ipp.c
-        src/sensors/detail/platform/src/vl53lx_platform_log.c
-        src/sensors/detail/platform/src/vl53lx_platform.cpp
+        src/sensors/detail/platform/src/platform.cpp
 
         src/connectivity/wireless/connection-status.cpp
         src/connectivity/wireless/wifi-connection.cpp
